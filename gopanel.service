@@ -1,0 +1,9 @@
+[Unit]
+Description=goPanel Web Analytics
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/gopanel
+
+[Install]
+WantedBy=multi-user.target
