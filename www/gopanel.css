@@ -1,0 +1,18 @@
+body { 
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+#blank { display: none; }
+
+.sitebtn { 
+    float: left; 
+    text-align: center; 
+    width: 300px; 
+    height: 70px; line-height:70px;
+    margin:5px; 
+    background-color: lightgray;
+    font-family: sans-serif; 
+    font-size:20px;
+    }
+.sitebtn:hover { cursor: pointer; }
