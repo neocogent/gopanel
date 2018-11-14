@@ -12,7 +12,7 @@ go_pid = {}  # dict of tuples { session: (pid,port) }
 @app.route("/sites", methods=['GET'])
 def sites():
     sites = {}
-    paths = glob('/etc/goaccess/*.conf')
+    paths = glob('/etc/gopanel/*.conf')
     for conf in paths:
         name,_ = os.path.splitext(os.path.basename(conf))
         title = get_conf_var(conf, 'html-report-title', name)
@@ -29,8 +29,8 @@ def sites():
 
 @app.route("/run", methods=['GET'])
 def run():
-    conf = '/etc/goaccess/%s.conf' % request.args.get('site')
-    paths = glob('/etc/goaccess/*.conf')
+    conf = '/etc/gopanel/%s.conf' % request.args.get('site')
+    paths = glob('/etc/gopanel/*.conf')
     if conf not in paths:
         return jsonify({'error':'invalid site'})
     sess = request.args.get('session', None)
