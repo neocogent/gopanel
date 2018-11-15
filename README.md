@@ -8,13 +8,20 @@ Right now gopanel only supports **one admin user** (non concurrent). I did struc
 
 #### How to Install and Use
 
-For now use `git clone`, then `python setup.py install`. I will likely make a deb or pip package soon. 
+For now use `git clone`, then commands as below. I will likely make a deb or pip package soon. 
+
+As root,
+
+- mkdir /etc/gopanel
+- cp etc/site* /etc/gopanel/
+- cp etc/gopanel.conf /etc/nginx
+- cp etc/gopanel.service /lib/systemd/system/
+- cp www/* /var/www/--your_site_location--/gopanel
 
 Next, customize (for Ubuntu, as example):
 
-- copy and edit example conf files in /etc/gopanel, one for each log file menu entry
-- include the gopanel.conf provided by adding `include gopanel` in a web site's conf (edit to suit desired location)
-- move the /var/www/gopanel web files to a location matching your nginx site conf
+- edit site conf files in /etc/gopanel, make one for each log file menu entry
+- include the **gopanel.conf** provided by adding `include gopanel` in a web site's conf (edit to suit desired location)
 - test the nginx conf with `nginx -t` before reloading it (conflicts can arise that need solving)
 - use openssl or htpasswd to create a .htpasswd file for authentication (you can remove this and skip, but I'd suggest not)
 - start the gopanel service with `systemctl start gopanel` and check it's status
@@ -22,7 +29,7 @@ Next, customize (for Ubuntu, as example):
 
 You can use `systemctl status gopanel` for troubleshooting. The default install serves gopanel on localhost and is proxied by nginx for ssl connection through your existing site as this is probably how most admins would like to use it but it can be adapted to other methods.
 
-If you have problems that you think are bugs then please post an issue so I cna help / fix.
+If you have problems that you think are bugs then please post an issue so I can help / fix.
 
 #### To Do 
 
