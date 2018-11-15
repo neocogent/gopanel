@@ -1,0 +1,4 @@
+include README.md
+recursive-include etc *
+recursive-include www *
+

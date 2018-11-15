@@ -5,6 +5,8 @@ from glob import glob
 from subprocess import Popen
 from flask import Flask, request, abort, redirect, jsonify, send_from_directory
 
+version = '0.1.0'
+
 app = Flask(__name__)
 go_cmd = '/usr/bin/goaccess -a -g --real-time-html -p %s --port %d'
 go_pid = {}  # dict of tuples { session: (pid,port) }
