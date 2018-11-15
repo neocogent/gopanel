@@ -26,6 +26,9 @@
         })
         .fail(function() {
         });
+        //$.get('api/info', {'site':'neocogent','session':Cookies.get('gopanel')}, function(data) {
+        //    console.log('info:', data);
+        //});
     });
 
 })(jQuery);
