@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 
-import os, sys, shlex, signal
+import os, sys, shlex, signal, json
 from glob import glob
-from subprocess import Popen
+from subprocess import Popen, check_output
 from flask import Flask, request, abort, redirect, jsonify, send_from_directory
 
 version = '0.1.0'
+etc = '/etc/gopanel'
 
 app = Flask(__name__)
-go_cmd = '/usr/bin/goaccess -a -g --real-time-html -p %s --port %d'
-go_pid = {}  # dict of tuples { session: (pid,port) }
 
-etc = '/etc/gopanel'
+go_cmd = '/usr/bin/goaccess -a -g --real-time-html -p %s --port %d'
+go_info = '/usr/bin/goaccess -a -g -o json -p %s'
+
+go_state = {}  # dict of tuples { session: (pid,port) }
 
 @app.route('/sites', methods=['GET'])
 def sites():
@@ -24,11 +26,11 @@ def sites():
     sess = request.args.get('session', None)
     if sess is None:
         return jsonify({'error':'no session'})
-    if sess in go_pid:
-        proc,port = go_pid[sess]
+    if sess in go_state:
+        proc,port = go_state[sess]
         proc.terminate()
         proc.wait()
-        del go_pid[sess]
+        del go_state[sess]
     return jsonify(sites)
 
 @app.route('/run', methods=['GET'])
@@ -40,18 +42,33 @@ def run():
     sess = request.args.get('session', None)
     if sess is None:
         return jsonify({'error':'no session'})
-    if sess in go_pid:
-        proc,port = go_pid[sess]
+    if sess in go_state:
+        proc,port = go_state[sess]
         proc.terminate()
         proc.wait()
     else:
         port = get_conf_var(conf, 'port', 7890) #+ len(goPid)
     try:
-        go_pid[sess] = Popen(shlex.split(go_cmd % (conf, int(port)))),port
+        go_state[sess] = Popen(shlex.split(go_cmd % (conf, int(port)))),port
     except Exception as e:
         return jsonify({'error':'goaccess'})
-    return jsonify({'go':os.path.basename(get_conf_var(conf, 'output-format')),'sess':sess[:8],'pid':go_pid[sess][0].pid,'port':go_pid[sess][1]})
-
+    return jsonify({'go':os.path.basename(get_conf_var(conf, 'output-format'))})
+    
+@app.route('/info', methods=['GET'])
+def info():
+    conf = etc+'/%s.conf' % request.args.get('site')
+    paths = glob(etc+'/*.conf')
+    if conf not in paths:
+        return jsonify({'error':'invalid site'})
+    try:
+        data = json.loads(check_output(shlex.split(go_info % conf)))
+    except Exception as e:
+        return jsonify({'error':'goaccess'})
+    for k in data:
+        if 'data' in data[k]:
+            del data[k]['data']
+    return jsonify(data)
+    
 def get_conf_var(conf, key, default=None):
     with open(conf) as f:
         data = f.read().splitlines()
