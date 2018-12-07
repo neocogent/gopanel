@@ -12,6 +12,7 @@ For now use `git clone`, then commands as below. I will likely make a deb or pip
 
 As root,
 
+- pip install Flask
 - mkdir /etc/gopanel
 - cp etc/site* /etc/gopanel/
 - cp etc/gopanel.conf /etc/nginx
